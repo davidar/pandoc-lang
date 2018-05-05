@@ -1,0 +1,28 @@
+{
+  "name": "pandoc-lang",
+  "version": "0.1.0",
+  "description": "Pandoc filter to detect the language of text",
+  "bin": "index.js",
+  "scripts": {
+    "test": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidar/pandoc-lang.git"
+  },
+  "author": "David A Roberts",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/davidar/pandoc-lang/issues"
+  },
+  "homepage": "https://github.com/davidar/pandoc-lang#readme",
+  "dependencies": {
+    "franc": "^4.0.0",
+    "get-stdin": "^6.0.0",
+    "iso-639-3": "^1.1.0",
+    "pandoc-filter": "^0.1.8"
+  },
+  "devDependencies": {
+    "standard": "^11.0.1"
+  }
+}
