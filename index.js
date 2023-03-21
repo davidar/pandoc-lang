@@ -1,13 +1,11 @@
 #!/usr/bin/env node
-'use strict'
-const franc = require('franc')
-const getStdin = require('get-stdin')
-const hljs = require('highlight.js')
-const iso639 = require('iso-639-3')
-const pandoc = require('pandoc-filter')
+import { franc } from 'franc'
+import getStdin from 'get-stdin'
+import hljs from 'highlight.js'
+import { iso6393To1 } from 'iso-639-3'
+import pandoc from 'pandoc-filter'
 
-const shortLang = {}
-for (const {iso6391, iso6393} of iso639) shortLang[iso6393] = iso6391
+const shortLang = iso6393To1
 
 // programming languages roughly sorted by popularity
 const codeLangs = [
@@ -65,32 +63,32 @@ const codeLangs = [
 ]
 
 function MetaInlines (...args) {
-  return {t: 'MetaInlines', c: args}
+  return { t: 'MetaInlines', c: args }
 }
 
-let words = []
+const words = []
 
-function action (key, value, format, meta) {
-  switch (key) {
-    case 'CodeBlock': return codeblock(...value)
+function action (el) {
+  switch (el.t) {
+    case 'CodeBlock': return codeblock(...el.c)
     case 'Space': words.push(' '); break
-    case 'Str': words.push(value); break
+    case 'Str': words.push(el.c); break
   }
 }
 
 function codeblock ([id, classes, attrs], content) {
   if (classes.join() === 'highlight') {
-    let {language, relevance} = hljs.highlightAuto(content, codeLangs)
+    const { language, relevance } = hljs.highlightAuto(content, codeLangs)
     classes = (relevance > 25) ? [language] : []
     return pandoc.CodeBlock([id, classes, attrs], content)
   }
 }
 
-getStdin().then(str => {
-  let data = JSON.parse(str)
-  let format = (process.argv.length > 2) ? process.argv[2] : ''
-  let meta = data.meta || data[0].unMeta
-  let output = pandoc.walk(data, action, format, meta)
+getStdin().then(async str => {
+  const data = JSON.parse(str)
+  const format = (process.argv.length > 2) ? process.argv[2] : ''
+  const meta = data.meta || data[0].unMeta
+  const output = await pandoc.walk(data, action, format, meta)
   let lang = franc(words.join(''))
   if (shortLang[lang]) lang = shortLang[lang]
   output.meta.lang = MetaInlines(pandoc.Str(lang))
