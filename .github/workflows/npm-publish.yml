@@ -16,6 +16,7 @@ jobs:
         with:
           node-version: 16
       - run: npm ci
+      - uses: nikeee/setup-pandoc@v1
       - run: npm test
 
   publish-npm:
